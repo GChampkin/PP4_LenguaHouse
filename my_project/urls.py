@@ -17,8 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from hello_world import views as index_views
+from lengua_house import views
 
 urlpatterns = [
-    path('', index_views.index, name='index'),
+    path('', views.home, name='home'),
+    path('about/', views.about, name='about'),
+    path('bookings/', views.bookings, name='bookings'), 
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/', admin.site.urls),
 ]
