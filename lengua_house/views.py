@@ -2,13 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse("home.html")
+    return render(request, "home.html")
 
 def about(request):
-    return HttpResponse("about.html")
+    return render(request, "about.html")
 
 def bookings(request):
-    return HttpResponse("bookings.html")
+    return render(request, "bookings.html")
 
 def admin_dashboard(request):
-    return HttpResponse("admin_dashboard.html")
+    return render(request, "admin_dashboard.html")
