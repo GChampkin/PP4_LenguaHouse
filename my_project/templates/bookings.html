@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Bookings - Lengua House{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Book a Slot</h1>
+    <p class="lead">Here you can book a session with the man himself.</p>
+    <a href="{% url 'bookings' %}" class="btn btn-primary">Book a Session</a>
+</div>
+{% endblock %}

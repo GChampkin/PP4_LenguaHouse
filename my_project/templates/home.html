@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Lengua House{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Welcome to Our Tutoring Website</h1>
+    <p class="lead">Learn from the best tutors online.</p>
+    <a href="{% url 'bookings' %}" class="btn btn-primary">Book a Session</a>
+</div>
+{% endblock %}
