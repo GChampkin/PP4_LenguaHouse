@@ -2,6 +2,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from datetime import date, timedelta
 from .models import TutorSchedule
 from .forms import BookingForm
 
@@ -75,3 +77,38 @@ def book_slot(request):
 
     return render(request, "book_slot.html",
                   {"available_slots": available_slots})
+
+def generate_date_range(start_date, end_date):
+    date_list = []
+    current_date = start_date
+    while current_date <= end_date:
+        date_list.append(current_date)
+        current_date += timedelta(days=1)
+    return date_list
+
+
+def create_tutor_slots(request):
+    start_date = date(2025, 3, 15)
+    end_date = date(2025, 9, 15)
+
+    lesson_dates = generate_date_range(start_date, end_date)
+
+    lesson_times = [
+        ("09:00:00", "09:00 AM"),
+        ("10:00:00", "10:00 AM"),
+        ("11:00:00", "11:00 AM"),
+        ("14:00:00", "02:00 PM"),
+        ("15:00:00", "03:00 PM"),
+        ("16:00:00", "04:00 PM"),
+    ]
+
+    for lesson_date in lesson_dates:
+        for time, display in lesson_times:
+            TutorSchedule.objects.create(
+                tutor_name="Gregory Champkin",
+                date=lesson_date,
+                time=time,
+                is_booked=False
+            )
+    
+    return HttpResponse("Lesson slots have been created.")
