@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from lengua_house.forms import BookingForm
-from .models import AvailableSlot
+from .models import TutorSchedule
+from .forms import BookingForm
 
 
 # HTML pages
@@ -52,23 +52,26 @@ def tutor_logout(request):
 # Tutor Dashboard View
 @login_required
 def tutor_dashboard(request):
-    slots = AvailableSlot.objects.all()
-    return render(request, 'admin_dashboard.html', {'slots': slots})
+    booked_slots = TutorSchedule.objects.filter(is_booked=True)
+    return render(request, "tutor_dashboard.html",
+                  {"booked_slots": booked_slots})
 
 
 # Booking View
 def book_slot(request):
+    available_slots = TutorSchedule.objects.filter(is_booked=False)
+
     if request.method == "POST":
-        form = BookingForm(request.POST)
+        slot_id = request.POST.get("slot_id")
+        slot = get_object_or_404(TutorSchedule, id=slot_id)
+        form = BookingForm(request.POST, instance=slot)
+
         if form.is_valid():
-            slot = form.save(commit=False)
-            slot.is_booked = True  # Mark slot as booked
-            slot.save()
-            return redirect('booking_success')  # Redirect to confirmation page
+            slot.is_booked = True  
+            form.save()
+            return redirect('booking_success')
     else:
         form = BookingForm()
 
-    available_slots = AvailableSlot.objects.filter(is_booked=False)
-    return render(request, 'book_slot.html',
-                  {'form': form, 
-                   'available_slots': available_slots})
+    return render(request, "book_slot.html",
+                  {"available_slots": available_slots})

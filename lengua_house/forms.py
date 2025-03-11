@@ -1,7 +1,8 @@
 from django import forms
-from .models import AvailableSlot
+from .models import TutorSchedule
+
 
 class BookingForm(forms.ModelForm):
     class Meta:
-        model = AvailableSlot
-        fields = ['date', 'time']
+        model = TutorSchedule
+        fields = ['booked_by', 'booked_email']

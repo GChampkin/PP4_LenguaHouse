@@ -8,13 +8,20 @@
     <p class="lead">View, add, or edit bookings made by users.</p>
 </div>
 
-<h2>Welcome, Tutor!</h2>
-<h3>Manage Your Schedule</h3>
-<ul>
-    {% for slot in slots %}
-        <li>{{ slot.date }} - {{ slot.time }}</li>
-    {% empty %}
-        <li>No slots available</li>
-    {% endfor %}
-</ul>
+<h2>Manage Your Schedule</h2>
+<h3>Booked Slots</h3>
+
+{% if booked_slots %}
+    <ul>
+        {% for slot in booked_slots %}
+            <li>
+                {{ slot.tutor_name }} - {{ slot.date }} {{ slot.time }} <br>
+                <strong>Booked by:</strong> {{ slot.booked_by }} ({{ slot.booked_email }})        
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No bookings yet.</p>
+{% endif %}
+
 {% endblock %}
