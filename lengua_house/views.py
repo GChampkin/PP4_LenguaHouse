@@ -61,7 +61,7 @@ def tutor_dashboard(request):
 
 # Booking View
 def book_slot(request):
-    available_slots = TutorSchedule.objects.filter(is_booked=False)
+    available_slots = TutorSchedule.objects.filter(is_booked=False).order_by("date", "time")
 
     if request.method == "POST":
         slot_id = request.POST.get("slot_id")
@@ -77,6 +77,7 @@ def book_slot(request):
 
     return render(request, "book_slot.html",
                   {"available_slots": available_slots})
+
 
 def generate_date_range(start_date, end_date):
     date_list = []
@@ -110,5 +111,5 @@ def create_tutor_slots(request):
                 time=time,
                 is_booked=False
             )
-    
+
     return HttpResponse("Lesson slots have been created.")

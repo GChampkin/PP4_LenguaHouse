@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>Available Slots</h3>
+<h3>Book a Lesson Slot</h3>
 
 {% if available_slots %}
     <form method="POST">
         {% csrf_token %}
-        <ul>
+        <label for="slot">Select a slot:</label>
+        <select name="slot" id="slot">
             {% for slot in available_slots %}
-                <li>
-                  {{ slot.tutor_name }} - {{ slot.date }} {{ slot.time }}
-                  <input type="hidden" name="slot_id" value="{{ slot.id }}">
-                  <input type="text" name="booked_by" placeholder="Your Name" required>
-                  <input type="email" name="booked_email" placeholder="Your Email" required>
-                  <button type="submit">Book Now</button>
-                </li>
+                <option value="{{ slot.id }}">
+                  {{ slot.date }} - {{ slot.time }}
+                </option>
             {% endfor %}
-        </ul>
+        </select>
+        <input type="text" name="booked_by" placeholder="Your Name" required>
+        <input type="email" name="booked_email" placeholder="Your Email" required>
+        <button type="submit">Book Now</button>
     </form>
 {% else %}
     <p>No available booking slots.</p>
