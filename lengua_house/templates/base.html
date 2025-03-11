@@ -22,7 +22,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'bookings' %}">Bookings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'book_slot' %}">Bookings</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">Admin</a></li>
                 </ul>
             </div>
@@ -32,6 +32,12 @@
     <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
+
+    {% if user.is_authenticated %}
+    <p>Welcome, {{ user.username }}! <a href="{% url 'tutor_logout' %}">Logout</a></p>
+    {% else %}
+    <a href="{% url 'tutor_login' %}">Tutor Login</a>
+    {% endif %}
 
     <footer class="text-center mt-5 py-3 bg-light">
         <p>&copy; 2025 Lengua House. All rights reserved.</p>

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Book a Slot</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Book Now</button>
+    </form>
+
+    <h3>Available Slots</h3>
+    <ul>
+        {% for slot in available_slots %}
+            <li>{{ slot.date }} at {{ slot.time }}</li>
+        {% empty %}
+            <li>No slots available</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

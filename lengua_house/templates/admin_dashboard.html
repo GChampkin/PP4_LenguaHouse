@@ -7,4 +7,14 @@
     <h1>Welcome to the Admin Dashboard</h1>
     <p class="lead">View, add, or edit bookings made by users.</p>
 </div>
+
+<h2>Welcome, Tutor!</h2>
+<h3>Manage Your Schedule</h3>
+<ul>
+    {% for slot in slots %}
+        <li>{{ slot.date }} - {{ slot.time }}</li>
+    {% empty %}
+        <li>No slots available</li>
+    {% endfor %}
+</ul>
 {% endblock %}

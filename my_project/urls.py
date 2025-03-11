@@ -21,7 +21,8 @@ from lengua_house import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
-    path('bookings/', views.bookings, name='bookings'), 
+    path('book/', views.book_slot, name='book_slot'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/', admin.site.urls),
+    path('', include('lengua_house.urls')), 
 ]
