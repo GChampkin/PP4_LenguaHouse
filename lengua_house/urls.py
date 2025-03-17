@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import tutor_login, tutor_logout, tutor_dashboard, book_slot, generate_date_range, create_tutor_slots 
+from .views import tutor_login, tutor_logout, tutor_dashboard, book_slot 
+from .views import generate_date_range, create_tutor_slots
 
 urlpatterns = [
     path('tutor-login/', tutor_login, name='tutor_login'),

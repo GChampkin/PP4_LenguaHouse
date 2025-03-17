@@ -103,8 +103,11 @@ def create_tutor_slots(request):
         ("16:00:00", "04:00 PM"),
     ]
 
+    schedules = TutorSchedule.objects.all().order_by('date', 'time')
+    context = {'schedules': schedules}
+
     for lesson_date in lesson_dates:
-        for time, display in lesson_times:
+        for time in lesson_times:
             TutorSchedule.objects.create(
                 tutor_name="Gregory Champkin",
                 date=lesson_date,
@@ -112,4 +115,4 @@ def create_tutor_slots(request):
                 is_booked=False
             )
 
-    return HttpResponse("Lesson slots have been created.")
+    return render(request, 'book_slot.html', context)
