@@ -10,7 +10,7 @@
         {% for schedule in schedules %}
             {% if not schedule.is_booked %} <!-- Only show available slots -->
                 <option value="{{ schedule.id }}">
-                    {{ schedule.tutor_name }} - {{ schedule.date }} at {{ schedule.get_time_display }}
+                    {{ schedule }}
                 </option>
             {% endif %}
         {% endfor %}

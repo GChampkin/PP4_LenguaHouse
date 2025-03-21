@@ -20,4 +20,4 @@ class TutorSchedule(models.Model):
 
     def __str__(self):
         status = "Booked" if self.is_booked else "Available"
-        return f"{self.tutor.name} - {self.date} {self.get_time_display()} ({status})"
+        return f"{self.tutor_name} - {self.date} {self.time} ({status})"

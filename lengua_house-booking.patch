@@ -1,0 +1,134 @@
+diff --git a/lengua_house/models.py b/lengua_house/models.py
+index a4c6310..c7e0533 100644
+--- a/lengua_house/models.py
++++ b/lengua_house/models.py
+@@ -20,4 +20,4 @@ class TutorSchedule(models.Model):
+ 
+     def __str__(self):
+         status = "Booked" if self.is_booked else "Available"
+-        return f"{self.tutor.name} - {self.date} {self.get_time_display()} ({status})"
++        return f"{self.tutor_name} - {self.date} {self.time} ({status})"
+diff --git a/lengua_house/templates/book_slot.html b/lengua_house/templates/book_slot.html
+index 6106a9c..69c1547 100644
+--- a/lengua_house/templates/book_slot.html
++++ b/lengua_house/templates/book_slot.html
+@@ -10,7 +10,7 @@
+         {% for schedule in schedules %}
+             {% if not schedule.is_booked %} <!-- Only show available slots -->
+                 <option value="{{ schedule.id }}">
+-                    {{ schedule.tutor_name }} - {{ schedule.date }} at {{ schedule.get_time_display }}
++                    {{ schedule }}
+                 </option>
+             {% endif %}
+         {% endfor %}
+diff --git a/lengua_house/templates/book_success.html b/lengua_house/templates/book_success.html
+index e69de29..67d1ff2 100644
+--- a/lengua_house/templates/book_success.html
++++ b/lengua_house/templates/book_success.html
+@@ -0,0 +1,5 @@
++{% extends 'base.html' %}
++{% block content %}
++<h3>SUCCESSFULLY BOOKED</h3>
++details: {{ booked_schedule }}
++{% endblock %}
+\ No newline at end of file
+diff --git a/lengua_house/views.py b/lengua_house/views.py
+index d076c46..ddff30c 100644
+--- a/lengua_house/views.py
++++ b/lengua_house/views.py
+@@ -1,3 +1,4 @@
++from django.db.models import QuerySet
+ from django.shortcuts import get_object_or_404, render, redirect
+ from django.contrib.auth import login, logout
+ from django.contrib.auth.forms import AuthenticationForm
+@@ -6,7 +7,9 @@ from django.http import HttpResponse
+ from datetime import date, timedelta
+ from .models import TutorSchedule
+ from .forms import BookingForm
++import logging.config
+ 
++logger = logging.getLogger('views')
+ 
+ # HTML pages
+ def home(request):
+@@ -61,23 +64,29 @@ def tutor_dashboard(request):
+ 
+ # Booking View
+ def book_slot(request):
++    logger.debug("book_slot called")
+     available_slots = TutorSchedule.objects.filter(is_booked=False).order_by("date", "time")
++    schedules = get_all_schedules_ordered_by_date_time()
++
++    logger.debug(f"available_slots count = {available_slots.count()}")
++    logger.debug(f"schedules count = {schedules.count()}")
+ 
+     if request.method == "POST":
+-        slot_id = request.POST.get("slot_id")
++        slot_id = request.POST.get("slot")
++        logger.debug(f"RECEIVED BOOK SLOT FORM SUBMIT POST for request.POST={request.POST}")
+         slot = get_object_or_404(TutorSchedule, id=slot_id)
+         form = BookingForm(request.POST, instance=slot)
+ 
+         if form.is_valid():
+             slot.is_booked = True  
+             form.save()
+-            return redirect('booking_success')
++            return render(request,'book_success.html', {"booked_schedule": slot})
+     else:
+         form = BookingForm()
+ 
+     return render(request, "book_slot.html",
+-                  {"available_slots": available_slots})
+-
++                  {"available_slots": available_slots,
++                   "schedules": schedules})
+ 
+ def generate_date_range(start_date, end_date):
+     date_list = []
+@@ -103,7 +112,7 @@ def create_tutor_slots(request):
+         ("16:00:00", "04:00 PM"),
+     ]
+ 
+-    schedules = TutorSchedule.objects.all().order_by('date', 'time')
++    schedules = get_all_schedules_ordered_by_date_time()
+     context = {'schedules': schedules}
+ 
+     for lesson_date in lesson_dates:
+@@ -111,8 +120,11 @@ def create_tutor_slots(request):
+             TutorSchedule.objects.create(
+                 tutor_name="Gregory Champkin",
+                 date=lesson_date,
+-                time=time,
++                time=time[0],
+                 is_booked=False
+             )
+ 
+     return render(request, 'book_slot.html', context)
++
++def get_all_schedules_ordered_by_date_time():
++    return TutorSchedule.objects.all().order_by('date', 'time')
+\ No newline at end of file
+diff --git a/my_project/settings.py b/my_project/settings.py
+index 6142a92..2f59b54 100644
+--- a/my_project/settings.py
++++ b/my_project/settings.py
+@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
+ """
+ 
+ import os
++import logging.config
+ from pathlib import Path
+ 
+ # Build paths inside the project like this: BASE_DIR / 'subdir'.
+@@ -123,3 +124,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+ # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+ 
+ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
++
++
++# will output to your console
++logging.basicConfig(
++    level = logging.DEBUG,
++    format = '%(asctime)s %(levelname)s %(message)s',
++)
+\ No newline at end of file

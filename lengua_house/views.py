@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -6,7 +7,9 @@ from django.http import HttpResponse
 from datetime import date, timedelta
 from .models import TutorSchedule
 from .forms import BookingForm
+import logging.config
 
+logger = logging.getLogger('views')
 
 # HTML pages
 def home(request):
@@ -61,22 +64,29 @@ def tutor_dashboard(request):
 
 # Booking View
 def book_slot(request):
+    logger.debug("book_slot called")
     available_slots = TutorSchedule.objects.filter(is_booked=False).order_by("date", "time")
+    schedules = get_all_schedules_ordered_by_date_time()
+
+    logger.debug(f"available_slots count = {available_slots.count()}")
+    logger.debug(f"schedules count = {schedules.count()}")
 
     if request.method == "POST":
-        slot_id = request.POST.get("slot_id")
+        slot_id = request.POST.get("slot")
+        logger.debug(f"RECEIVED BOOK SLOT FORM SUBMIT POST for request.POST={request.POST}")
         slot = get_object_or_404(TutorSchedule, id=slot_id)
         form = BookingForm(request.POST, instance=slot)
 
         if form.is_valid():
             slot.is_booked = True  
             form.save()
-            return redirect('booking_success')
+            return render(request,'book_success.html', {"booked_schedule": slot})
     else:
         form = BookingForm()
 
     return render(request, "book_slot.html",
-                  {"available_slots": available_slots})
+                  {"available_slots": available_slots,
+                   "schedules": schedules})
 
 
 def generate_date_range(start_date, end_date):
@@ -88,6 +98,7 @@ def generate_date_range(start_date, end_date):
     return date_list
 
 
+@login_required
 def create_tutor_slots(request):
     start_date = date(2025, 3, 15)
     end_date = date(2025, 9, 15)
@@ -103,7 +114,7 @@ def create_tutor_slots(request):
         ("16:00:00", "04:00 PM"),
     ]
 
-    schedules = TutorSchedule.objects.all().order_by('date', 'time')
+    schedules = get_all_schedules_ordered_by_date_time()
     context = {'schedules': schedules}
 
     for lesson_date in lesson_dates:
@@ -111,8 +122,12 @@ def create_tutor_slots(request):
             TutorSchedule.objects.create(
                 tutor_name="Gregory Champkin",
                 date=lesson_date,
-                time=time,
+                time=time[0],
                 is_booked=False
             )
 
     return render(request, 'book_slot.html', context)
+
+
+def get_all_schedules_ordered_by_date_time():
+    return TutorSchedule.objects.all().order_by('date', 'time')

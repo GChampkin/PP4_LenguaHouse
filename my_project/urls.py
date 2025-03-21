@@ -24,5 +24,5 @@ urlpatterns = [
     path('book/', views.book_slot, name='book_slot'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/', admin.site.urls),
-    path('', include('lengua_house.urls')), 
+    path('', include('lengua_house.urls')),
 ]
