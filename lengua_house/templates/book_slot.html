@@ -8,9 +8,9 @@
     <label for="slot">Select a Time Slot:</label>
     <select name="slot" id="slot" required>
         {% for schedule in schedules %}
-            {% if not schedule.is_booked %} <!-- Only show available slots -->
+            {% if not schedule.is_booked %} 
                 <option value="{{ schedule.id }}">
-                    {{ schedule }}
+                    {{ schedule.tutor_name }} - {{ schedule.date }} at {{ schedule.get_time_display }}
                 </option>
             {% endif %}
         {% endfor %}
